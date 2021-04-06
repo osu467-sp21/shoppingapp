@@ -10,17 +10,19 @@ import java.util.Map;
 public class ShoppingListController {
 
     // would add into an aws builder after test connection
+    AmazonRDSClientBuilder clientBuilder;
+    // RDS instance created with table Items
 
     @GetMapping(value = {"/", "/home"})
     @ResponseStatus(HttpStatus.OK)
     public String home() {
-        AmazonRDSClientBuilder clientBuilder;
-        // RDS instance created with table Items
         return "home";
     }
 
+    // request should contain a JSON object representing the shopping list
     @PostMapping("/compare")
     public String compareShoppingList(@RequestBody(required=true) Map<String, Object>  payload) {
+        // handler for querying, extracting, and comparing the items
         return payload.toString();
     }
 }
