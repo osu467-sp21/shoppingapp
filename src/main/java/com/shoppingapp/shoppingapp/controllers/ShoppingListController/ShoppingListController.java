@@ -20,9 +20,17 @@ public class ShoppingListController {
     }
 
     // request should contain a JSON object representing the shopping list
-    @PostMapping("/compare")
+    @PostMapping(value = "/compare")
     public String compareShoppingList(@RequestBody(required=true) Map<String, Object>  payload) {
         // handler for querying, extracting, and comparing the items
         return payload.toString();
+    }
+
+    // Update and delete mapping for a shopping list should occur at the frontend
+
+    @PostMapping(value = "/userAddition")
+    public HttpStatus userAdditionItem() {
+        // add logic for insert into rds
+        return HttpStatus.ACCEPTED;
     }
 }
