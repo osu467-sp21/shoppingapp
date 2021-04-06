@@ -7,7 +7,7 @@ References:
 Log: 
 4/6:
 - Created base backend:
-    - Ref: https://github.com/osu467-sp21/shoppingapp/commit/20147fb2e195344cfc4b87e5d181f10a4ed540cb
+    - Ref: https://github.com/osu467-sp21/shoppingapp/commit/b1ded12bbd75192136aa6a0b4338470b655faf70
 - Created AWS RDS database instance
     - Tested with MySQL WorkBench
 - Added rough GET/POST endpoints for updating a shopping cart
