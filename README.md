@@ -4,6 +4,10 @@ References:
 - https://docs.aws.amazon.com/rds/index.html
 - https://aws.amazon.com/elasticbeanstalk/developer-resources/
 
+Connecting ElasticBeanstalk to RDS (MySQL):
+- https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/java-rds.html
+    - Requires setting of env
+
 Log: 
 4/6:
 - Created base backend:
@@ -14,6 +18,12 @@ Log:
     - Will further discuss at tomorrow's team meeting 4/7
 - Added pom.xml depen for aws sdk
 - Confirmed local + EB 
+
+For local development using the mvnw:
+-  ./mvnw clean spring-boot:run
+
+To deploy to Elastic Beanstalk, need to package as a .jar:
+- ./mvnw package
     
 Action Items:
 - Configuration: Connect api with rds instance

@@ -1,22 +1,39 @@
 package com.shoppingapp.shoppingapp.controllers.ShoppingListController;
 
-import com.amazonaws.services.rds.AmazonRDSClientBuilder;
+import com.shoppingapp.shoppingapp.model.User;
+import com.shoppingapp.shoppingapp.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+// TODO: separate out controllers for users and shopping list
 @RestController
 public class ShoppingListController {
 
-    // would add into an aws builder after test connection
-    AmazonRDSClientBuilder clientBuilder;
     // RDS instance created with table Items
+    @Autowired
+    private UserRepository repository;
 
     @GetMapping(value = {"/", "/home"})
     @ResponseStatus(HttpStatus.OK)
-    public String home() {
+    public @ResponseBody String home() {
         return "home";
+    }
+
+    @PostMapping(value = {"/userIds"})
+    @ResponseStatus(HttpStatus.OK)
+    public void userIds() {
+        // TODO:to add fields, add to model -> abstract away to @Builder
+        // concern of immutability per object
+        repository.save(new User());
+    }
+
+    @GetMapping(value = {"/userIds"})
+    @ResponseStatus(HttpStatus.OK)
+    public @ResponseBody Iterable<User>  getUserIds() {
+        return repository.findAll();
     }
 
     // request should contain a JSON object representing the shopping list
@@ -29,7 +46,8 @@ public class ShoppingListController {
     // Update and delete mapping for a shopping list should occur at the frontend
     @PostMapping(value = "/userAddition")
     public HttpStatus userAdditionItem() {
-        // add logic for insert into rds
+        // TODO: add logic for insert single item into RDS
+        // basically a retrieve and update
         return HttpStatus.ACCEPTED;
     }
 }
