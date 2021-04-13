@@ -26,6 +26,9 @@ public class ShoppingListController {
     @PostMapping(value = "/shoppingList")
     public String compareShoppingList(@RequestBody(required=true) Map<String, Object>  payload) {
         // handler for querying, extracting, and comparing the items
+        // TODO: add in a model that represents an Item + ShoppingList
+
+        // TODO: call shoppingListComparison.getChosenList(payload.shoppinglist);
         return payload.toString();
     }
 
