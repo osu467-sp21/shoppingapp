@@ -1,0 +1,24 @@
+1. Setup MySQL Server
+	- https://medium.com/macoclock/mysql-on-mac-getting-started-cecb65b78e
+		- Make sure to note these fields in setup as you will need to add these to your application.properties:
+		Ex:
+			- spring.datasource.url=jdbc:mysql://localhost:3306/mysql
+			- spring.datasource.username=username
+			- spring.datasource.password=password
+		- To connect to AWS RDS will need to change these fields and check the Security Gropu for inbound rules
+
+2. Connect using MySQL Workbench
+	- instructions for this also in the ref link above
+	- from here, can 'Test Connection' for both dev and prod
+
+3. Open the project in your IDE (this example uses IntelliJ)
+
+4. If configured, dependencies in the pom.xml will install
+	- if not, then navigate to the side panel with 'Maven', then 'Lifecycle', and then execute the install
+
+5. To run, open the terminal and enter:
+	- ./mvnw clean spring-boot:run
+
+6. Test using Postman
+
+7. Make sure when you commit, no application.properties or temp files like .iml files
