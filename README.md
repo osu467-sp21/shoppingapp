@@ -7,6 +7,10 @@ References:
 Connecting ElasticBeanstalk to RDS (MySQL):
 - https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/java-rds.html
     - Requires setting of env
+    
+Okta:
+- https://github.com/okta/okta-spring-boot#:~:text=To%20create%20a%20new%20OIDC,as%20a%20login%20redirect%20URI.
+- https://github.com/okta/okta-sdk-java
 
 Log: 
 4/6:
