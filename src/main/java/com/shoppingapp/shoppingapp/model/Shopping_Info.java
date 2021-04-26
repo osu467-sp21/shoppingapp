@@ -1,14 +1,20 @@
 package com.shoppingapp.shoppingapp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Value;
+import com.amazonaws.services.dynamodbv2.xspec.S;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+
+import java.util.Map;
 
 @Data
-@Builder
 @Value
 @AllArgsConstructor
 public class Shopping_Info {
-    Integer zip_code;
+    @JsonProperty("zipCode")
+    Integer zipCode;
+    @JsonProperty("surroundDistance")
+    Float surroundDistance;
+    @JsonProperty("shoppingList")
+    Map<String, Float> shoppingList;
 }

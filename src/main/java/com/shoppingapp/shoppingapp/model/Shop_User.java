@@ -9,7 +9,7 @@ import java.util.Date;
 @Data
 @Builder
 @Value
-public class User {
+public class Shop_User {
     String user_id;
     String username;
     String first_name;
