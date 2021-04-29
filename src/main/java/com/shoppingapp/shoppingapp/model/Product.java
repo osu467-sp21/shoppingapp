@@ -22,7 +22,10 @@ public class Product {
     String size_unit;
     Integer generic_product; //(foreign key)
 
-    public Product() {
+    // adding price for mvp
+    // adding store for mvp
+    Double price = 0.0;
+    String store;
 
-    }
+    public Product() {}
 }

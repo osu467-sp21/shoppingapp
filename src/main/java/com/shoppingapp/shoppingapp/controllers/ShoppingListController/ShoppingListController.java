@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 @RestController
@@ -32,8 +33,8 @@ public class ShoppingListController {
     public ResponseEntity<?> compareShoppingList(@RequestBody(required=true) String payload) {
         // handler for querying, extracting, and comparing the items
         try {
-             shoppingListComparison.getChosenList(payload);
-            return new ResponseEntity<>(payload, HttpStatus.OK);
+            Shopping_Info chosenList = shoppingListComparison.getChosenList(payload);
+            return new ResponseEntity<>(chosenList, HttpStatus.OK);
         }
         catch (IllegalFieldValueException illegalFieldValueException) {
             System.out.println(illegalFieldValueException);

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Map;
 
 @Data
@@ -16,5 +17,5 @@ public class Shopping_Info {
     @JsonProperty("surroundDistance")
     Float surroundDistance;
     @JsonProperty("shoppingList")
-    Map<String, Float> shoppingList;
+    ArrayList<Map<String, Map<String, Double>>> shoppingList;
 }
