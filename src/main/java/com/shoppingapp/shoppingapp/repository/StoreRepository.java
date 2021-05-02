@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface StoreRepository extends CrudRepository<Product, Long> {
+public interface StoreRepository extends CrudRepository<Store, Long> {
 
     @Query(value = "SELECT S FROM Store S")
     List<Store> findAllStores();
