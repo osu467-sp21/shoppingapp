@@ -1,8 +1,10 @@
 package com.shoppingapp.shoppingapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Builder
@@ -13,7 +15,7 @@ public class Product {
     // UUID
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer product_id;
+    Long product_id;
     Integer manufacturer_id;
     Integer item_number;
     Integer check_digit;
@@ -24,8 +26,16 @@ public class Product {
 
     // adding price for mvp
     // adding store for mvp
-    Double price = 0.0;
-    String store;
+    @Transient
+    Double value = 0.0;
+    @Transient
+    Long store_id;
+    @Transient
+    Long user_id;
+    @Transient
+    String date_entered;
+    @Transient
+    Boolean is_sale;
 
     public Product() {}
 }

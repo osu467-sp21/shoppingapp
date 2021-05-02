@@ -5,10 +5,7 @@ import com.shoppingapp.shoppingapp.repository.StoreRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @AllArgsConstructor
@@ -20,7 +17,7 @@ public class StoreController {
         return new ResponseEntity<>(storeRepository.findAllStores(), HttpStatus.OK);
     }
 
-    @PutMapping("/stores")
+    @PostMapping("/stores")
     public ResponseEntity<?> addStore(@RequestBody Store store) {
         return new ResponseEntity<>(storeRepository.save(store), HttpStatus.OK);
     }

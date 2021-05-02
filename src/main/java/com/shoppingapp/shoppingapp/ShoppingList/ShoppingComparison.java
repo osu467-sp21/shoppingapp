@@ -39,8 +39,8 @@ public class ShoppingComparison {
                 createdItem.put("no cheaper alternative", 0.0);
             } else{
                 System.out.println(candidate_items.get(0));
-                Collections.sort(candidate_items, (Comparator.comparingDouble(Product::getPrice)));
-                createdItem.put("price", candidate_items.get(0).getPrice());
+                Collections.sort(candidate_items, (Comparator.comparingDouble(Product::getValue)));
+                createdItem.put("price", candidate_items.get(0).getValue());
             }
             list.get(index.intValue()).put("chosenProduct", createdItem);
             index.addAndGet(1);
