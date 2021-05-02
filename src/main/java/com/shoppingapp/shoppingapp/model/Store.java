@@ -15,8 +15,8 @@ import javax.persistence.*;
 public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Integer store_id;
-    String name;
+    Long store_id;
+    String store_name;
     String addr_line_1;
     String addr_line_2;
     String addr_line_3;
