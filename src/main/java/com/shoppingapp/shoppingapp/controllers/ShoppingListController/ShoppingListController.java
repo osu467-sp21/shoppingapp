@@ -3,14 +3,8 @@ package com.shoppingapp.shoppingapp.controllers.ShoppingListController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shoppingapp.shoppingapp.ShoppingList.ShoppingComparison;
 import com.shoppingapp.shoppingapp.ShoppingList.ShoppingInfoExtractor;
-import com.shoppingapp.shoppingapp.model.Price;
-import com.shoppingapp.shoppingapp.model.Product;
-import com.shoppingapp.shoppingapp.model.Shopping_Info;
-import com.shoppingapp.shoppingapp.model.Store_Product;
-import com.shoppingapp.shoppingapp.repository.PriceRepository;
-import com.shoppingapp.shoppingapp.repository.ProductRepository;
-import com.shoppingapp.shoppingapp.repository.StoreProductRepository;
-import com.shoppingapp.shoppingapp.repository.StoreRepository;
+import com.shoppingapp.shoppingapp.model.*;
+import com.shoppingapp.shoppingapp.repository.*;
 import lombok.AllArgsConstructor;
 import org.joda.time.IllegalFieldValueException;
 import org.springframework.http.HttpStatus;
@@ -29,6 +23,7 @@ public class ShoppingListController {
     private StoreRepository storeRepository;
     private StoreProductRepository storeProductRepository;
     private PriceRepository priceRepository;
+    private StoreProductPriceRepository storeProductPriceRepository;
 
     @GetMapping(value = {"/", "/home"})
     @ResponseStatus(HttpStatus.OK)
@@ -80,7 +75,12 @@ public class ShoppingListController {
         Price price = Price.builder().user_id(product.getUser_id())
                 .value(product.getValue()).date_entered(product.getDate_entered())
                 .is_sale(product.getIs_sale()).build();
-        priceRepository.save(price);
+        Price savedPrice = priceRepository.save(price);
+
+        // add into the Store_Product_Price table
+        storeProductPriceRepository.save(Store_Product_Price.builder()
+                .price_id(savedPrice.getPrice_id())
+                .store_id(product.getStore_id()).product_id(product.getProduct_id()).build());
 
         System.out.println(product);
         return new ResponseEntity<>(HttpStatus.OK);
