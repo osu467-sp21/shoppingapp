@@ -12,10 +12,17 @@ import java.util.Map;
 @Value
 @AllArgsConstructor
 public class Shopping_Info {
+//    @JsonProperty("zipCode")
+//    Integer zipCode;
+//    @JsonProperty("surroundDistance")
+//    Float surroundDistance;
+//    @JsonProperty("shoppingList")
+//    ArrayList<Map<String, Map<String, Double>>> shoppingList;
+
     @JsonProperty("zipCode")
     Integer zipCode;
     @JsonProperty("surroundDistance")
     Float surroundDistance;
     @JsonProperty("shoppingList")
-    ArrayList<Map<String, Map<String, Double>>> shoppingList;
+    ArrayList<Product> shoppingList;
 }

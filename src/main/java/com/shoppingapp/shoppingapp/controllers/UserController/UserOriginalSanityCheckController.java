@@ -26,13 +26,13 @@ public class UserOriginalSanityCheckController {
     public void userIds() {
         // TODO:to add fields, add to model -> abstract away to @Builder
         // concern of immutability per object
-        repository.save(new UserOriginalSanityCheck());
+//        repository.save(new UserOriginalSanityCheck());
     }
 
-    @GetMapping(value = {"/userIds"})
-    @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody
-    Iterable<UserOriginalSanityCheck>  getUserIds() {
-        return repository.findAll();
-    }
+//    @GetMapping(value = {"/userIds"})
+//    @ResponseStatus(HttpStatus.OK)
+//    public @ResponseBody
+//    Iterable<UserOriginalSanityCheck>  getUserIds() {
+//        return repository.findAll();
+//    }
 }

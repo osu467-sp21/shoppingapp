@@ -14,7 +14,7 @@
 	<name>shoppingapp</name>
 	<description>Backend for Shopping App CS 467 Capstone</description>
 	<properties>
-		<java.version>15</java.version>
+		<java.version>11</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -31,6 +31,10 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.20</version>
 			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.okta.sdk</groupId>
