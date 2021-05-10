@@ -36,6 +36,10 @@ public class Product {
     String date_entered;
     @Transient
     Boolean is_sale;
+    @Transient
+    String chosen_store;
+    @Transient
+    Double chosen_price;
 
     public Product() {}
 }
