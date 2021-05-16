@@ -59,6 +59,16 @@ public class ShoppingListController {
         return new ResponseEntity<>(productRepository.findAllProductsWithName(name), HttpStatus.OK);
     }
 
+    @GetMapping(value= "/products/partial/pre/{name}")
+    ResponseEntity<?> getAllWithPartialName(@PathVariable(value="name") String name) {
+        return new ResponseEntity<>(productRepository.findAllProductsWithPartialName(name), HttpStatus.OK);
+    }
+
+    @GetMapping(value= "/products/partial/complete/{name}")
+    ResponseEntity<?> findAllProductsContainingName(@PathVariable(value="name") String name) {
+        return new ResponseEntity<>(productRepository.findAllProductsContainingName(name), HttpStatus.OK);
+    }
+
     @PostMapping(value= "/products")
     ResponseEntity<?> saveProduct(@RequestBody Product product) {
         // check that the store exists
