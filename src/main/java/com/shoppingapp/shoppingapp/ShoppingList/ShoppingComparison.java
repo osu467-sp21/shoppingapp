@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ShoppingComparison {
     // impl for comparison algorithm
     private ShoppingInfoExtractor shoppingInfoExtractor;
-    private EligibleZips eligibleZips;
+//    private EligibleZips eligibleZips;
     private ProductRepository productRepository;
 
     public Shopping_Info getChosenList(String payload) {
