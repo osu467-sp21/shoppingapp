@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Data
 @Builder
@@ -14,13 +15,15 @@ import javax.persistence.*;
 public class User {
     // UUID
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    Long user_id;
-    String firstName;
-    String lastName;
-    String email;
-    String login;
-    String mobilePhone;
+    String user_id;
+    String username;
+    String first_name;
+    String last_name;
+//    String email;
+    Integer zip_code;
+    Date signup_date;
+    String master_shopper_level;
+    String active_shopping_list; // foreign key
 
     public User() {}
 }

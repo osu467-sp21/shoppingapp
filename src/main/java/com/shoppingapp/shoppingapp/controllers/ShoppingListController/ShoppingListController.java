@@ -1,18 +1,16 @@
 package com.shoppingapp.shoppingapp.controllers.ShoppingListController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shoppingapp.shoppingapp.ShoppingList.ShoppingComparison;
-import com.shoppingapp.shoppingapp.ShoppingList.ShoppingInfoExtractor;
 import com.shoppingapp.shoppingapp.model.*;
 import com.shoppingapp.shoppingapp.repository.*;
+import com.shoppingapp.shoppingapp.oktaJwtVerifier.JwtVerifier;
 import lombok.AllArgsConstructor;
 import org.joda.time.IllegalFieldValueException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.Map;
+import com.okta.jwt.Jwt;
+import com.okta.jwt.JwtVerificationException;
 
 @RestController
 @AllArgsConstructor
@@ -24,6 +22,8 @@ public class ShoppingListController {
     private StoreProductRepository storeProductRepository;
     private PriceRepository priceRepository;
     private StoreProductPriceRepository storeProductPriceRepository;
+
+    private static JwtVerifier jwtVerifier;
 
     @GetMapping(value = {"/", "/home"})
     @ResponseStatus(HttpStatus.OK)
@@ -70,8 +70,17 @@ public class ShoppingListController {
     }
 
     @PostMapping(value= "/products")
-    ResponseEntity<?> saveProduct(@RequestBody Product product) {
+    ResponseEntity<?> saveProduct(@RequestBody Product product,
+                                  @RequestHeader("Authorization") String authorization) {
+        try {
+            authorization = authorization.replace("Bearer ", "");
+            Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
+        }
+        catch (Exception e) {
+            return new ResponseEntity("invalid access_token", HttpStatus.UNAUTHORIZED);
+        }
         // check that the store exists
+        System.out.println(product.getItem_name());
         storeRepository.findById(product.getStore_id());
         System.out.println(storeRepository);
 
