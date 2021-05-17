@@ -57,15 +57,14 @@ public class UserController {
         public String firstName;
         public String lastName;
         public String email;
-        public String login;
+        public String username;
     }
 
     @PostMapping(value = "/users",
     consumes = "application/json")
     public ResponseEntity createUserWithIdToken(@RequestHeader("Authorization") String authorization,
                                                 @RequestBody PostUsersBody body) {
-        System.out.println(body.login);
-//        System.out.println(body.login);
+        System.out.println(body.username);
         return new ResponseEntity("creating user", HttpStatus.CREATED);
     }
 

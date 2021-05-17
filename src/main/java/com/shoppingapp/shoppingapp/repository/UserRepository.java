@@ -15,5 +15,8 @@ public interface UserRepository extends CrudRepository<User, Long> {
     List<User> findAllUsers();
 
     @Query(value = "SELECT U FROM User U WHERE U.user_id = ?1")
-    User findUserById(Long user_id);
+    User findUserById(String user_id);
+
+    @Query(value = "SELECT U.user_id FROM User U WHERE U.username = ?1")
+    String findUserIdByUsername(String login);
 }

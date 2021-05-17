@@ -72,9 +72,11 @@ public class ShoppingListController {
     @PostMapping(value= "/products")
     ResponseEntity<?> saveProduct(@RequestBody Product product,
                                   @RequestHeader("Authorization") String authorization) {
+        String user_id;
         try {
             authorization = authorization.replace("Bearer ", "");
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
+            user_id = jwt.getClaims().get("sub").toString();
         }
         catch (Exception e) {
             return new ResponseEntity("invalid access_token", HttpStatus.UNAUTHORIZED);
@@ -91,7 +93,7 @@ public class ShoppingListController {
                 savedProduct.getProduct_id()));
 
         // add into the Price table
-        Price price = Price.builder().user_id(product.getUser_id())
+        Price price = Price.builder().user_id(user_id)
                 .value(product.getValue()).date_entered(product.getDate_entered())
                 .is_sale(product.getIs_sale()).build();
         Price savedPrice = priceRepository.save(price);
