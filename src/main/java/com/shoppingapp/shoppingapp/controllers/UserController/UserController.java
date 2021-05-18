@@ -3,6 +3,7 @@ package com.shoppingapp.shoppingapp.controllers.UserController;
 import com.okta.jwt.Jwt;
 import com.okta.jwt.JwtVerificationException;
 import com.shoppingapp.shoppingapp.repository.UserRepository;
+import com.shoppingapp.shoppingapp.model.User;
 import lombok.AllArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -56,16 +57,24 @@ public class UserController {
         public String user_id;
         public String firstName;
         public String lastName;
-        public String email;
+//        public String email;
         public String username;
     }
 
     @PostMapping(value = "/users",
     consumes = "application/json")
-    public ResponseEntity createUserWithIdToken(@RequestHeader("Authorization") String authorization,
-                                                @RequestBody PostUsersBody body) {
-        System.out.println(body.username);
-        return new ResponseEntity("creating user", HttpStatus.CREATED);
+    public ResponseEntity createUser(@RequestHeader("Authorization") String authorization,
+                                                @RequestBody User user) {
+        try {
+//            System.out.println(user);
+//            user.setMaster_shopper_level(0);
+            User newUser = userRepository.save(user);
+            return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>("error creating user", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/users/{user_id}")
@@ -76,19 +85,21 @@ public class UserController {
         try {
             authorization = authorization.replace("Bearer ", "");
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
-            // Check that User.login with User.user_id == user_id equals jwt.getClaims().get("sub")
+            // TODO Check that User.login with User.user_id == user_id equals jwt.getClaims().get("sub")
             // then return that user data
             System.out.println(jwt.getClaims().get("sub"));
-//            userRepository.findUserById(user_id);
-            return new ResponseEntity("found user", HttpStatus.OK);
+            User user = userRepository.findUserById(user_id);
+            if (user == null)
+                throw new Exception("could not find user");
+            return new ResponseEntity<>(user, HttpStatus.OK);
         }
         catch (JwtVerificationException exception) {
             System.out.println(exception.getMessage());
-            return new ResponseEntity("invalid access_token", HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>("invalid access_token", HttpStatus.UNAUTHORIZED);
         }
         catch (Exception exception) {
             System.out.println(exception);
-            return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
         }
     }
 

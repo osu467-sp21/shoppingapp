@@ -16,11 +16,11 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long product_id;
-    String bardcode;
+    String barcode;
     Integer size;
     String item_name;
     String size_unit;
-    Integer generic_product; //(foreign key)
+//    Integer generic_product; //(foreign key)
 
     // adding price for mvp
     // adding store for mvp

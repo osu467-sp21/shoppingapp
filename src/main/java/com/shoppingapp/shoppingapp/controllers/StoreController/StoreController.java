@@ -18,8 +18,16 @@ public class StoreController {
     }
 
     @PostMapping("/stores")
-    public ResponseEntity<?> addStore(@RequestBody Store store) {
-        return new ResponseEntity<>(storeRepository.save(store), HttpStatus.OK);
+    public ResponseEntity<?> addStore(@RequestBody Store store,
+                                      @RequestHeader("Authorization") String authorization) {
+        try {
+            Store newStore = storeRepository.save(store);
+            return new ResponseEntity<>(newStore.getStore_id() , HttpStatus.OK);
+        }
+        catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<>("could not add item", HttpStatus.FORBIDDEN); // TODO Correct
+        }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.shoppingapp.shoppingapp.controllers.ShoppingListController;
 
+import com.amazonaws.services.simpleworkflow.flow.core.TryCatch;
 import com.shoppingapp.shoppingapp.ShoppingList.ShoppingComparison;
 import com.shoppingapp.shoppingapp.model.*;
 import com.shoppingapp.shoppingapp.repository.*;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import com.okta.jwt.Jwt;
 import com.okta.jwt.JwtVerificationException;
 
+import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
+
 @RestController
 @AllArgsConstructor
 public class ShoppingListController {
@@ -22,8 +26,9 @@ public class ShoppingListController {
     private StoreProductRepository storeProductRepository;
     private PriceRepository priceRepository;
     private StoreProductPriceRepository storeProductPriceRepository;
+    private UserRepository userRepository;
 
-    private static JwtVerifier jwtVerifier;
+    private final JwtVerifier jwtVerifier = new JwtVerifier();
 
     @GetMapping(value = {"/", "/home"})
     @ResponseStatus(HttpStatus.OK)
@@ -76,21 +81,38 @@ public class ShoppingListController {
         try {
             authorization = authorization.replace("Bearer ", "");
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
-            user_id = jwt.getClaims().get("sub").toString();
+            user_id = userRepository.findUserIdByUsername(jwt.getClaims().get("sub").toString());
+        }
+        catch (JwtVerificationException exception) {
+            System.out.println(exception.getMessage());
+            return new ResponseEntity<>("invalid access_token", HttpStatus.UNAUTHORIZED);
         }
         catch (Exception e) {
-            return new ResponseEntity("invalid access_token", HttpStatus.UNAUTHORIZED);
+            System.out.println(e);
+            return new ResponseEntity<>("Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         // check that the store exists
+        System.out.println(user_id);
         System.out.println(product.getItem_name());
         storeRepository.findById(product.getStore_id());
         System.out.println(storeRepository);
 
-        Product savedProduct = productRepository.save(product);
+        Product savedProduct;
+        try {
+            savedProduct = productRepository.save(product);
+        }
+        catch (Exception ignored) {
+            savedProduct = productRepository.findByBarcode(product.getBarcode());
+        }
 
         // add into the Store_Product table
-        storeProductRepository.save(new Store_Product(product.getStore_id(),
-                savedProduct.getProduct_id()));
+        try {
+            storeProductRepository.save(new Store_Product(product.getStore_id(),
+                    savedProduct.getProduct_id()));
+        }
+        catch (Exception ignored) {
+            System.out.println(ignored);
+        } // May throw Duplicate Exception
 
         // add into the Price table
         Price price = Price.builder().user_id(user_id)
@@ -101,7 +123,10 @@ public class ShoppingListController {
         // add into the Store_Product_Price table
         storeProductPriceRepository.save(Store_Product_Price.builder()
                 .price_id(savedPrice.getPrice_id())
-                .store_id(product.getStore_id()).product_id(product.getProduct_id()).build());
+                .store_id(product.getStore_id())
+                .product_id(savedProduct.getProduct_id()).build());
+
+
 
         System.out.println(product);
         return new ResponseEntity<>(HttpStatus.OK);

@@ -17,13 +17,10 @@ public class User {
     // UUID
     @Id
     String user_id;
-    @NonNull
     String username;
-    @NonNull
     Date signup_date;
     String first_name;
     String last_name;
-    //    String email;
     Integer zip_code;
     Integer master_shopper_level;
     String active_shopping_list; // foreign key
