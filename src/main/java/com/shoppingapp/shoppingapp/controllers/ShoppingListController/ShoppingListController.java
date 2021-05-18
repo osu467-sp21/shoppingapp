@@ -1,6 +1,8 @@
 package com.shoppingapp.shoppingapp.controllers.ShoppingListController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.shoppingapp.shoppingapp.ShoppingList.ShoppingComparison;
+import com.shoppingapp.shoppingapp.ShoppingList.ShoppingInfoExtractor;
 import com.shoppingapp.shoppingapp.model.*;
 import com.shoppingapp.shoppingapp.repository.*;
 import com.shoppingapp.shoppingapp.oktaJwtVerifier.JwtVerifier;
@@ -16,6 +18,8 @@ import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -77,22 +81,58 @@ public class ShoppingListController {
 
     @GetMapping(value= "/products")
     ResponseEntity<?> getAllProducts() {
-        return new ResponseEntity<>(productRepository.findAllProducts(), HttpStatus.OK);
+        // go through each product and have to retrieve the store and the price
+        List<Product> allProducts = productRepository.findAllProducts();
+        addStorePrice(allProducts);
+        return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
     @GetMapping(value= "/products/{name}")
     ResponseEntity<?> getAllWithName(@PathVariable(value="name") String name) {
-        return new ResponseEntity<>(productRepository.findAllProductsWithName(name), HttpStatus.OK);
+        List<Product> allProducts = productRepository.findAllProductsWithName(name);
+        addStorePrice(allProducts);
+        return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
     @GetMapping(value= "/products/partial/pre/{name}")
     ResponseEntity<?> getAllWithPartialName(@PathVariable(value="name") String name) {
+        List<Product> allProducts = productRepository.findAllProductsWithName(name);
+        addStorePrice(allProducts);
         return new ResponseEntity<>(productRepository.findAllProductsWithPartialName(name), HttpStatus.OK);
     }
 
     @GetMapping(value= "/products/partial/complete/{name}")
     ResponseEntity<?> findAllProductsContainingName(@PathVariable(value="name") String name) {
-        return new ResponseEntity<>(productRepository.findAllProductsContainingName(name), HttpStatus.OK);
+        List<Product> allProducts = productRepository.findAllProductsContainingName(name);
+        addStorePrice(allProducts);
+        return new ResponseEntity<>(allProducts, HttpStatus.OK);
+    }
+
+    protected void addStorePrice(List<Product> allProducts) {
+        int i;
+        for (i = 0; i < allProducts.size(); ++i) {
+            // get from the Store_Product table
+            try {
+                Product product = allProducts.get(i);
+                List<Store_Product> retrievedStoreProduct = storeProductRepository.findStoreProduct(product.getProduct_id());
+                Long storeId = retrievedStoreProduct.get(0).getStore_id();
+                System.out.println(storeId);
+
+                // get the store info, Store
+                storeRepository.findById(storeId).ifPresent(data -> { product.setStore_id(storeId); });
+
+                // get from the Store_Product_Price table
+                Store_Product_Price price = storeProductPriceRepository.getStoreProductPrice(
+                        product.getProduct_id(),
+                        storeId
+                ).get(0);
+
+                priceRepository.findById(price.getPrice_id()).ifPresent(p -> {product.setValue(p.getValue());});
+            }
+            catch (Exception e) {
+                System.out.println(e);
+            }
+        }
     }
 
     @GetMapping(value= "/products/barcode/{barcode}")
@@ -101,7 +141,7 @@ public class ShoppingListController {
     }
 
     @PostMapping(value= "/products")
-    ResponseEntity<?> saveProduct(@RequestBody Product product,
+    ResponseEntity<?> addProduct(@RequestBody Product product,
                                   @RequestHeader("Authorization") String authorization) {
         String user_id;
         try {
@@ -117,9 +157,7 @@ public class ShoppingListController {
             System.out.println(e);
             return new ResponseEntity<>("Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        // TODO check that the store exists
-        System.out.println(user_id);
-        System.out.println(product.getItem_name());
+        // check that the store exists
         storeRepository.findById(product.getStore_id());
         System.out.println(storeRepository);
 
