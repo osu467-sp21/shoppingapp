@@ -6,6 +6,9 @@ import java.time.Duration;
 public class JwtVerifier {
     public AccessTokenVerifier accessTokenVerifier;
     public IdTokenVerifier idTokenVerifier;
+    public String stripBearer(String authorization) {
+        return authorization.replace("Bearer ", "");
+    }
 
     @SuppressWarnings("SpellCheckingInspection")
     public JwtVerifier() {
