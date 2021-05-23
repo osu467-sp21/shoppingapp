@@ -69,6 +69,11 @@ public class ShoppingListController {
         return new ResponseEntity<>(productRepository.findAllProductsContainingName(name), HttpStatus.OK);
     }
 
+    @GetMapping(value= "/products/barcode/{barcode}")
+    ResponseEntity<?> findProductWithBarcode(@PathVariable(value="barcode") String barcode) {
+        return new ResponseEntity<>(productRepository.findProductWithBarcode(barcode), HttpStatus.OK);
+    }
+
     @PostMapping(value= "/products")
     ResponseEntity<?> saveProduct(@RequestBody Product product,
                                   @RequestHeader("Authorization") String authorization) {

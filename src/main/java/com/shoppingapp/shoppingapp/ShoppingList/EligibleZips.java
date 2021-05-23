@@ -42,7 +42,7 @@ public class EligibleZips {
     private int distance = -100;
     private int zipCode = -100;
     private int errorCode = -999;
-    private MysqlxDatatypes.Scalar.String errorMsg = "";
+    private String errorMsg = "";
     private final Set<Integer> zipSet = new HashSet<>();
 
     public boolean isErrorFlagSet() { return this.errorFlag; }

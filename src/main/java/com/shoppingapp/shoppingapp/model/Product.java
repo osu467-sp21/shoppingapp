@@ -16,7 +16,7 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long product_id;
-    String bardcode;
+    String barcode;
     Integer size;
     String item_name;
     String size_unit;
