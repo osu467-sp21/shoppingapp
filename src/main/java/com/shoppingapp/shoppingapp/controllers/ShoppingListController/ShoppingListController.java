@@ -15,6 +15,7 @@ import com.okta.jwt.JwtVerificationException;
 
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
+import java.util.ArrayList;
 
 @RestController
 @AllArgsConstructor
@@ -54,6 +55,26 @@ public class ShoppingListController {
         }
     }
 
+    @GetMapping(value = "/shoppingList/{user_id}")
+    ResponseEntity<?> getShoppingListWithUserId(@PathVariable(value = "user_id") String user_id,
+                                               @RequestHeader("Authorization") String authorization) {
+        try {
+            authorization = jwtVerifier.stripBearer(authorization);
+            Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
+            String username = jwt.getClaims().get("sub").toString();
+            String jwt_id = userRepository.findUserIdByUsername(username);
+            if (user_id.equals(jwt_id)) {
+//                ArrayList<Product> list =
+                return new ResponseEntity<>("", HttpStatus.OK);
+
+            }
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+    }
+
     @GetMapping(value= "/products")
     ResponseEntity<?> getAllProducts() {
         return new ResponseEntity<>(productRepository.findAllProducts(), HttpStatus.OK);
@@ -91,7 +112,7 @@ public class ShoppingListController {
             System.out.println(e);
             return new ResponseEntity<>("Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        // check that the store exists
+        // TODO check that the store exists
         System.out.println(user_id);
         System.out.println(product.getItem_name());
         storeRepository.findById(product.getStore_id());
@@ -110,8 +131,8 @@ public class ShoppingListController {
             storeProductRepository.save(new Store_Product(product.getStore_id(),
                     savedProduct.getProduct_id()));
         }
-        catch (Exception ignored) {
-            System.out.println(ignored);
+        catch (Exception exception) {
+            System.out.println(exception);
         } // May throw Duplicate Exception
 
         // add into the Price table

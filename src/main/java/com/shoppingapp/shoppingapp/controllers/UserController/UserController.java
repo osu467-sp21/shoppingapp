@@ -20,54 +20,34 @@ public class UserController {
 //    @Autowired
     private final UserRepository userRepository;
 
-//    @Value("0oam8mzyjZe2wBERc5d6")
-//    private final String oktaApiClientId;
-//
-//    @Value("${okta.api.client.secret}")
-//    private final String oktaApiClientSecret;
-//
-//    @Value("${okta.api.domain}")
-//    private final String oktaApiClientDomain;
-//
-//    @Value("${okta.api.token}")
-//    private final String oktaApiClientToken;
-
     private final RestTemplate restTemplate = new RestTemplate();
-
     private final JwtVerifier jwtVerifier = new JwtVerifier();
 
-//    @PostMapping("/users")
-//    public ResponseEntity createUserWithPassword(@RequestParam("userName") String userName,
-//                                                 @RequestParam("password") String password) {
-//        String url = "https://"+oktaApiClientDomain + "/api/v1/users?activate=true";
-//
-//        ArrayList acceptHeader = new ArrayList();
-//        acceptHeader.add(MediaType.APPLICATION_JSON);
-//
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setAccept(acceptHeader);
-//        headers.set("Authorization", oktaApiClientToken);
-//        HttpEntity <String> entity = new HttpEntity<String>(headers);
-//
-////        restTemplate.postForEntity(url)
-//        return new ResponseEntity("created user", HttpStatus.OK);
-//    }
+    private class HttpException extends Exception {
+        private HttpStatus status;
 
-    private static class PostUsersBody {
-        public String user_id;
-        public String firstName;
-        public String lastName;
-//        public String email;
-        public String username;
+        public HttpException (String message, HttpStatus status) {
+            super(message);
+            this.setStatus(status);
+        }
+
+        public HttpStatus getStatus() {
+            return this.status;
+        }
+
+        public void setStatus(HttpStatus status) {
+            this.status = status;
+        }
+
     }
 
     @PostMapping(value = "/users",
     consumes = "application/json")
-    public ResponseEntity createUser(@RequestHeader("Authorization") String authorization,
+    public ResponseEntity<?> createUser(@RequestHeader("Authorization") String authorization,
                                                 @RequestBody User user) {
         try {
 //            System.out.println(user);
-//            user.setMaster_shopper_level(0);
+            user.setMaster_shopper_level(0);
             User newUser = userRepository.save(user);
             return new ResponseEntity<>(newUser, HttpStatus.CREATED);
         }
@@ -78,28 +58,38 @@ public class UserController {
     }
 
     @GetMapping("/users/{user_id}")
-    public ResponseEntity getUserWithAccessToken(
+    public ResponseEntity<?> getUserWithAccessToken(
             @PathVariable("user_id") String user_id,
             @RequestHeader("Authorization") String authorization) {
         // retrieve from Okta
         try {
-            authorization = authorization.replace("Bearer ", "");
+            authorization = jwtVerifier.stripBearer(authorization);
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
-            // TODO Check that User.login with User.user_id == user_id equals jwt.getClaims().get("sub")
-            // then return that user data
-            System.out.println(jwt.getClaims().get("sub"));
-            User user = userRepository.findUserById(user_id);
-            if (user == null)
-                throw new Exception("could not find user");
-            return new ResponseEntity<>(user, HttpStatus.OK);
+            // Check that User.username with User.user_id == user_id equals jwt.getClaims().get("sub")
+            String username = jwt.getClaims().get("sub").toString();
+            String jwt_id = userRepository.findUserIdByUsername(username);
+            if (user_id.equals(jwt_id)) {
+                User user = userRepository.findUserById(user_id);
+                if (user == null)
+                    throw new HttpException("could not find user", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(user, HttpStatus.OK);
+            }
+            else {
+                throw new HttpException("access_token does not match param user_id", HttpStatus.FORBIDDEN);
+            }
+        // then return that user data
         }
         catch (JwtVerificationException exception) {
             System.out.println(exception.getMessage());
             return new ResponseEntity<>("invalid access_token", HttpStatus.UNAUTHORIZED);
         }
+        catch (HttpException exception) {
+            System.out.println(exception.getMessage());
+            return new ResponseEntity<>(exception.getMessage(), exception.getStatus());
+        }
         catch (Exception exception) {
             System.out.println(exception);
-            return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
