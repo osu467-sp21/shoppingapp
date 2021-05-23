@@ -1,6 +1,5 @@
 package com.shoppingapp.shoppingapp.controllers.ShoppingListController;
 
-import com.amazonaws.services.simpleworkflow.flow.core.TryCatch;
 import com.shoppingapp.shoppingapp.ShoppingList.ShoppingComparison;
 import com.shoppingapp.shoppingapp.model.*;
 import com.shoppingapp.shoppingapp.repository.*;
@@ -16,6 +15,7 @@ import com.okta.jwt.JwtVerificationException;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @AllArgsConstructor
@@ -61,18 +61,18 @@ public class ShoppingListController {
         try {
             authorization = jwtVerifier.stripBearer(authorization);
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
-            String username = jwt.getClaims().get("sub").toString();
-            String jwt_id = userRepository.findUserIdByUsername(username);
-            if (user_id.equals(jwt_id)) {
+            String jwt_uid = jwt.getClaims().get("uid").toString();
+            if (user_id.equals(jwt_uid)) {
+//                Select shopping list items here
 //                ArrayList<Product> list =
                 return new ResponseEntity<>("", HttpStatus.OK);
 
             }
+            return new ResponseEntity<>("access_token does not match user_id", HttpStatus.UNAUTHORIZED);
         }
         catch (Exception e) {
             return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value= "/products")
@@ -107,7 +107,7 @@ public class ShoppingListController {
         try {
             authorization = authorization.replace("Bearer ", "");
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
-            user_id = userRepository.findUserIdByUsername(jwt.getClaims().get("sub").toString());
+            user_id = jwt.getClaims().get("uid").toString();
         }
         catch (JwtVerificationException exception) {
             System.out.println(exception.getMessage());
@@ -128,7 +128,8 @@ public class ShoppingListController {
             savedProduct = productRepository.save(product);
         }
         catch (Exception ignored) {
-            savedProduct = productRepository.findByBarcode(product.getBarcode());
+            List<Product> foundProducts = productRepository.findProductWithBarcode(product.getBarcode());
+            savedProduct = foundProducts.get(0);
         }
 
         // add into the Store_Product table
@@ -152,10 +153,7 @@ public class ShoppingListController {
                 .store_id(product.getStore_id())
                 .product_id(savedProduct.getProduct_id()).build());
 
-
-
-        System.out.println(product);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(savedProduct, HttpStatus.OK);
     }
 
 

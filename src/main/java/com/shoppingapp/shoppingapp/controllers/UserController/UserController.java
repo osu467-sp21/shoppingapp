@@ -65,10 +65,8 @@ public class UserController {
         try {
             authorization = jwtVerifier.stripBearer(authorization);
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
-            // Check that User.username with User.user_id == user_id equals jwt.getClaims().get("sub")
-            String username = jwt.getClaims().get("sub").toString();
-            String jwt_id = userRepository.findUserIdByUsername(username);
-            if (user_id.equals(jwt_id)) {
+            String jwt_uid = jwt.getClaims().get("uid").toString();
+            if (user_id.equals(jwt_uid)) {
                 User user = userRepository.findUserById(user_id);
                 if (user == null)
                     throw new HttpException("could not find user", HttpStatus.NOT_FOUND);
@@ -92,13 +90,4 @@ public class UserController {
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-//    // Ref: https://developer.okta.com/docs/reference/api/oidc/#introspect
-//    @PostMapping("/token/{token_id}")
-//    public ResponseEntity validIdOrToken(
-//            @PathVariable("token_id") String token) {
-//        // retrieve from Okta
-//        return new ResponseEntity("created user", HttpStatus.OK);
-//    }
-
 }
