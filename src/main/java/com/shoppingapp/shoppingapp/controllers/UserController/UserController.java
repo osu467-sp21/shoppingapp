@@ -42,11 +42,10 @@ public class UserController {
     }
 
     @PostMapping(value = "/users",
-    consumes = "application/json")
+                 consumes = "application/json")
     public ResponseEntity<?> createUser(@RequestHeader("Authorization") String authorization,
-                                                @RequestBody User user) {
+                                        @RequestBody User user) {
         try {
-//            System.out.println(user);
             user.setMaster_shopper_level(0);
             User newUser = userRepository.save(user);
             return new ResponseEntity<>(newUser, HttpStatus.CREATED);
@@ -75,7 +74,7 @@ public class UserController {
             else {
                 throw new HttpException("access_token does not match param user_id", HttpStatus.FORBIDDEN);
             }
-        // then return that user data
+            // then return that user data
         }
         catch (JwtVerificationException exception) {
             System.out.println(exception.getMessage());

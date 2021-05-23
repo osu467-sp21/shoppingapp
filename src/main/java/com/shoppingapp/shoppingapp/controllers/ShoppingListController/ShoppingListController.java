@@ -153,6 +153,8 @@ public class ShoppingListController {
                 .store_id(product.getStore_id())
                 .product_id(savedProduct.getProduct_id()).build());
 
+        // Increment master_shopper_level
+        userRepository.incrementMSL(user_id);
         return new ResponseEntity<>(savedProduct, HttpStatus.OK);
     }
 
