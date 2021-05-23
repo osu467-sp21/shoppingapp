@@ -14,7 +14,7 @@ import javax.persistence.*;
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    String review_id;
+    Long review_id;
 
     String review_content;
     public Review() {
