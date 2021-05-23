@@ -20,7 +20,7 @@ public class Product {
     Integer size;
     String item_name;
     String size_unit;
-    Integer generic_product; //(foreign key)
+//    Integer generic_product; //(foreign key)
 
     // adding price for mvp
     // adding store for mvp

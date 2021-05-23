@@ -18,12 +18,12 @@ public class Store {
     Long store_id;
     String store_name;
     String addr_line_1;
-    String addr_line_2;
-    String addr_line_3;
-    String city;
-    String state;
+//    String addr_line_2;
+//    String addr_line_3;
+//    String city;
+//    String state;
     Integer zip_code;
-    String country;
+//    String country;
 
     public Store() {
 
