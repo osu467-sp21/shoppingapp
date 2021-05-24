@@ -1,9 +1,7 @@
 package com.shoppingapp.shoppingapp.ShoppingList;
 
-import com.shoppingapp.shoppingapp.model.Product;
-import com.shoppingapp.shoppingapp.model.Shopping_Info;
-import com.shoppingapp.shoppingapp.model.Shopping_List;
-import com.shoppingapp.shoppingapp.repository.ProductRepository;
+import com.shoppingapp.shoppingapp.model.*;
+import com.shoppingapp.shoppingapp.repository.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +13,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ShoppingComparison {
     // impl for comparison algorithm
     private ShoppingInfoExtractor shoppingInfoExtractor;
-//    private EligibleZips eligibleZips;
+    //    private EligibleZips eligibleZips;
     private ProductRepository productRepository;
+    private StoreProductRepository storeProductRepository;
+    private StoreRepository storeRepository;
+    private StoreProductPriceRepository storeProductPriceRepository;
+    private PriceRepository priceRepository;
 
     public Shopping_Info getChosenList(String payload) {
         Shopping_Info shopping_info = compareItems(shoppingInfoExtractor.processPayload(payload));
@@ -54,19 +56,64 @@ public class ShoppingComparison {
         // iterate through the shopping_info's shopping_list ArrayList<Product> and find the cheapest
         shopping_info.getShoppingList().forEach(product -> {
             List<Product> candidate_items = productRepository.findAllProductsWithName(product.getItem_name());
-            if (candidate_items.size() <= 0) {
-                // no alternative
-                // put "no alternative
-                product.setChosen_store("no cheaper alternative");
-                product.setChosen_price(0.0);
-            } else{
-                System.out.println(candidate_items.get(0));
-                Collections.sort(candidate_items, (Comparator.comparingDouble(Product::getValue)));
-                product.setChosen_price(candidate_items.get(0).getValue());
-                // TODO need to set the get and set the name of the store
+            try {
+                if (candidate_items.size() <= 0) {
+                    // no alternative
+                    // put "no alternative
+                    setNoAlternative(product);
+                } else {
+                    System.out.println(candidate_items.get(0));
+                    // add the store price to the list of candidate_items
+                    addStorePrice(candidate_items);
+
+                    Collections.sort(candidate_items, (Comparator.comparingDouble(Product::getValue)));
+
+                    setNoAlternative(product);
+                    // add check if the price is lower
+                    if (product.getValue() > candidate_items.get(0).getValue()) {
+                        product.setChosen_price(candidate_items.get(0).getValue());
+                        product.setChosen_store(candidate_items.get(0).getStore_id().toString());
+                    }
+                }
+            } catch (Exception e) {
+                setNoAlternative(product);
             }
         });
         return shopping_info;
     }
 
+    private void setNoAlternative(Product product) {
+        product.setChosen_store("no cheaper alternative");
+        product.setChosen_price(0.0);
+    }
+
+    protected void addStorePrice(List<Product> allProducts) {
+        int i;
+        for (i = 0; i < allProducts.size(); ++i) {
+            // get from the Store_Product table
+            try {
+                Product product = allProducts.get(i);
+                List<Store_Product> retrievedStoreProduct = storeProductRepository.findStoreProduct(product.getProduct_id());
+                Long storeId = retrievedStoreProduct.get(0).getStore_id();
+                System.out.println(storeId);
+
+                // get the store info, Store
+                storeRepository.findById(storeId).ifPresent(data -> {
+                    product.setStore_id(storeId);
+                });
+
+                // get from the Store_Product_Price table
+                Store_Product_Price price = storeProductPriceRepository.getStoreProductPrice(
+                        product.getProduct_id(),
+                        storeId
+                ).get(0);
+
+                priceRepository.findById(price.getPrice_id()).ifPresent(p -> {
+                    product.setValue(p.getValue());
+                });
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+        }
+    }
 }

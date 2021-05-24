@@ -37,23 +37,22 @@ public class ShoppingListController {
 
     @GetMapping(value = {"/", "/home"})
     @ResponseStatus(HttpStatus.OK)
-    public @ResponseBody String home() {
+    public @ResponseBody
+    String home() {
         return "home";
     }
 
     // request should contain a JSON object representing the shopping list
     @PostMapping(value = "/shoppingList")
-    public ResponseEntity<?> compareShoppingList(@RequestBody(required=true) String payload) {
+    public ResponseEntity<?> compareShoppingList(@RequestBody(required = true) String payload) {
         // handler for querying, extracting, and comparing the items
         try {
             Shopping_Info chosenList = shoppingListComparison.getChosenList(payload);
             return new ResponseEntity<>(chosenList, HttpStatus.OK);
-        }
-        catch (IllegalFieldValueException illegalFieldValueException) {
+        } catch (IllegalFieldValueException illegalFieldValueException) {
             System.out.println(illegalFieldValueException);
             return new ResponseEntity<>(illegalFieldValueException, HttpStatus.BAD_REQUEST);
-        }
-        catch (Exception exception) {
+        } catch (Exception exception) {
             System.out.println(exception);
             return new ResponseEntity<>(exception, HttpStatus.BAD_REQUEST);
         }
@@ -61,7 +60,7 @@ public class ShoppingListController {
 
     @GetMapping(value = "/shoppingList/{user_id}")
     ResponseEntity<?> getShoppingListWithUserId(@PathVariable(value = "user_id") String user_id,
-                                               @RequestHeader("Authorization") String authorization) {
+                                                @RequestHeader("Authorization") String authorization) {
         try {
             authorization = jwtVerifier.stripBearer(authorization);
             Jwt jwt = jwtVerifier.accessTokenVerifier.decode(authorization);
@@ -79,7 +78,7 @@ public class ShoppingListController {
         }
     }
 
-    @GetMapping(value= "/products")
+    @GetMapping(value = "/products")
     ResponseEntity<?> getAllProducts() {
         // go through each product and have to retrieve the store and the price
         List<Product> allProducts = productRepository.findAllProducts();
@@ -87,22 +86,22 @@ public class ShoppingListController {
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
-    @GetMapping(value= "/products/{name}")
-    ResponseEntity<?> getAllWithName(@PathVariable(value="name") String name) {
+    @GetMapping(value = "/products/{name}")
+    ResponseEntity<?> getAllWithName(@PathVariable(value = "name") String name) {
         List<Product> allProducts = productRepository.findAllProductsWithName(name);
         addStorePrice(allProducts);
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
     }
 
-    @GetMapping(value= "/products/partial/pre/{name}")
-    ResponseEntity<?> getAllWithPartialName(@PathVariable(value="name") String name) {
+    @GetMapping(value = "/products/partial/pre/{name}")
+    ResponseEntity<?> getAllWithPartialName(@PathVariable(value = "name") String name) {
         List<Product> allProducts = productRepository.findAllProductsWithName(name);
         addStorePrice(allProducts);
         return new ResponseEntity<>(productRepository.findAllProductsWithPartialName(name), HttpStatus.OK);
     }
 
-    @GetMapping(value= "/products/partial/complete/{name}")
-    ResponseEntity<?> findAllProductsContainingName(@PathVariable(value="name") String name) {
+    @GetMapping(value = "/products/partial/complete/{name}")
+    ResponseEntity<?> findAllProductsContainingName(@PathVariable(value = "name") String name) {
         List<Product> allProducts = productRepository.findAllProductsContainingName(name);
         addStorePrice(allProducts);
         return new ResponseEntity<>(allProducts, HttpStatus.OK);
@@ -119,7 +118,9 @@ public class ShoppingListController {
                 System.out.println(storeId);
 
                 // get the store info, Store
-                storeRepository.findById(storeId).ifPresent(data -> { product.setStore_id(storeId); });
+                storeRepository.findById(storeId).ifPresent(data -> {
+                    product.setStore_id(storeId);
+                });
 
                 // get from the Store_Product_Price table
                 Store_Product_Price price = storeProductPriceRepository.getStoreProductPrice(
@@ -127,9 +128,10 @@ public class ShoppingListController {
                         storeId
                 ).get(0);
 
-                priceRepository.findById(price.getPrice_id()).ifPresent(p -> {product.setValue(p.getValue());});
-            }
-            catch (Exception e) {
+                priceRepository.findById(price.getPrice_id()).ifPresent(p -> {
+                    product.setValue(p.getValue());
+                });
+            } catch (Exception e) {
                 System.out.println(e);
             }
         }
@@ -195,7 +197,4 @@ public class ShoppingListController {
         userRepository.incrementMSL(user_id);
         return new ResponseEntity<>(savedProduct, HttpStatus.OK);
     }
-
-
-
 }
