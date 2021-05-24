@@ -16,13 +16,18 @@ import java.util.Date;
 public class User {
     // UUID
     @Id
+    @Column(length=128)
     String user_id;
+    @Column(length=128)
     String username;
     Date signup_date;
+    @Column(length=128)
     String first_name;
+    @Column(length=128)
     String last_name;
     Integer zip_code;
     Integer master_shopper_level;
+    @Column(length=128)
     String active_shopping_list; // foreign key
 
     public User() {}
