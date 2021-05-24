@@ -35,7 +35,7 @@ public class Product {
     @Transient
     Boolean is_sale;
     @Transient
-    String chosen_store;
+    Store chosen_store;
     @Transient
     Double chosen_price;
 

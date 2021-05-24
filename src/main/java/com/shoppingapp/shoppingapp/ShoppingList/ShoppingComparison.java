@@ -71,7 +71,41 @@ public class ShoppingComparison {
                     setNoAlternative(product);
                     // add check if the price is lower
                     product.setChosen_price(candidate_items.get(0).getValue());
-                    product.setChosen_store(storeRepository.findById(candidate_items.get(0).getStore_id()).get().toString());
+                    storeRepository.findById(candidate_items.get(0).getStore_id()).ifPresent(data -> {
+                        product.setChosen_store(data);
+                    });
+                }
+            } catch (Exception e) {
+                setNoAlternative(product);
+            }
+        });
+        return shopping_info;
+    }
+
+    private Shopping_Info compareItemsWithPrice(Shopping_Info shopping_info) {
+        // iterate through the shopping_info's shopping_list ArrayList<Product> and find the cheapest
+        shopping_info.getShoppingList().forEach(product -> {
+            List<Product> candidate_items = productRepository.findAllProductsWithName(product.getItem_name());
+            try {
+                if (candidate_items.size() <= 0) {
+                    // no alternative
+                    // put "no alternative
+                    setNoAlternative(product);
+                } else {
+                    System.out.println(candidate_items.get(0));
+                    // add the store price to the list of candidate_items
+                    addStorePrice(candidate_items);
+
+                    Collections.sort(candidate_items, (Comparator.comparingDouble(Product::getValue)));
+
+                    setNoAlternative(product);
+                    // add check if the price is lower
+                    if (product.getValue() > candidate_items.get(0).getValue()) {
+                        product.setChosen_price(candidate_items.get(0).getValue());
+                        storeRepository.findById(candidate_items.get(0).getStore_id()).ifPresent(data -> {
+                            product.setChosen_store(data);
+                        });
+                    }
                 }
             } catch (Exception e) {
                 setNoAlternative(product);
@@ -81,7 +115,7 @@ public class ShoppingComparison {
     }
 
     private void setNoAlternative(Product product) {
-        product.setChosen_store("no cheaper alternative");
+        product.setChosen_store(null);
         product.setChosen_price(0.0);
     }
 
