@@ -70,10 +70,8 @@ public class ShoppingComparison {
 
                     setNoAlternative(product);
                     // add check if the price is lower
-                    if (product.getValue() > candidate_items.get(0).getValue()) {
-                        product.setChosen_price(candidate_items.get(0).getValue());
-                        product.setChosen_store(candidate_items.get(0).getStore_id().toString());
-                    }
+                    product.setChosen_price(candidate_items.get(0).getValue());
+                    product.setChosen_store(storeRepository.findById(candidate_items.get(0).getStore_id()).get().toString());
                 }
             } catch (Exception e) {
                 setNoAlternative(product);

@@ -7,7 +7,7 @@ import lombok.Value;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
 @Data
 @Builder
@@ -20,10 +20,10 @@ public class Price {
     Long price_id;
 
     Double value;
-    Long user_id; // foreign key
+    String user_id; // foreign key
 
     Boolean is_sale;
-    String date_entered;
+    String date_entered; // TODO Change all references to Date?
     String sale_expiration;
 
     public Price() {

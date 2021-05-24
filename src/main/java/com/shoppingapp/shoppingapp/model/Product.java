@@ -16,13 +16,11 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long product_id;
-    Integer manufacturer_id;
-    Integer item_number;
-    Integer check_digit;
+    String barcode;
     Integer size;
     String item_name;
     String size_unit;
-    Integer generic_product; //(foreign key)
+//    Integer generic_product; //(foreign key)
 
     // adding price for mvp
     // adding store for mvp
@@ -31,7 +29,7 @@ public class Product {
     @Transient
     Long store_id;
     @Transient
-    Long user_id;
+    String user_id;
     @Transient
     String date_entered;
     @Transient
