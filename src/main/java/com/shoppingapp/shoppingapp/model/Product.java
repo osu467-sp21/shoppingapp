@@ -38,6 +38,8 @@ public class Product {
     Store chosen_store;
     @Transient
     Double chosen_price;
+    @Transient
+    String chosen_unit;
 
     public Product() {}
 }

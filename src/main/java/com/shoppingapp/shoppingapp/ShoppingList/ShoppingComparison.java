@@ -62,7 +62,7 @@ public class ShoppingComparison {
                     // put "no alternative
                     setNoAlternative(product);
                 } else {
-                    System.out.println(candidate_items.get(0));
+                    System.out.println(candidate_items.get(0).getSize_unit());
                     // add the store price to the list of candidate_items
                     addStorePrice(candidate_items);
 
@@ -71,6 +71,7 @@ public class ShoppingComparison {
                     setNoAlternative(product);
                     // add check if the price is lower
                     product.setChosen_price(candidate_items.get(0).getValue());
+                    product.setChosen_unit(candidate_items.get(0).getSize_unit());
                     storeRepository.findById(candidate_items.get(0).getStore_id()).ifPresent(data -> {
                         product.setChosen_store(data);
                     });
