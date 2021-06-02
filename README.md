@@ -37,7 +37,3 @@ Action Items:
 - Flush out models with team 4/7
 - Create logic for comparison algo through POST
 - Add billing alarms and restrictions
-
-![Alt text](exReq.png?raw=true "Example Request Min")
-
-![Alt text](exResp.png?raw=true "Example Response Min")
